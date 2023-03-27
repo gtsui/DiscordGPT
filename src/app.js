@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const { client, openai, history } = require("./config.js");
-const { getCost, printCost } = require("./util.js");
+const { promptTokens, completionTokens, getCost, getCostSummary } = require("./util.js");
 
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -30,6 +30,9 @@ client.on('messageCreate', async (message) => {
   if(message.content === "?HISTORY.CLEAR") {
     history[channelId] = {};
     message.channel.send("Conversation history cleared.");
+  } else if(message.content === "?COST") {
+    let costSummary = getCostSummary();
+    message.channel.send(costSummary);
   }
   
   // Add user message to the conversation history
@@ -57,8 +60,11 @@ async function chatGPT(history) {
       messages: [ {role: "user", content: prompt }]
     });
 
+    // Update token/cost usage
     let usage = response.data.usage;
-    printCost(usage.prompt_tokens, usage.completion_tokens);
+    promptTokens += usage.prompt_tokens;
+    completionTokens += usage.completionTokens;
+    console.log(getCostSummary());
     
     return response.data.choices[0].message.content.trim();
   } catch (error) {
