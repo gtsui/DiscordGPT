@@ -21,7 +21,7 @@ const getCostSummary = () => {
   return ("Prompt Tokens: " + promptTokens + "\nCompletion Tokens: " + completionTokens + "\nCumulative Cost: $" + costStr);
 }
 
-const splitMsgToChunks = (message, maxLength = 2000) {
+const splitMsgToChunks = (message, maxLength = 2000) => {
   if (message.length <= maxLength) return [message];
 
   const messageParts = [];
