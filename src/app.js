@@ -12,7 +12,8 @@ const {
   completionTokens,
   updateCompletionTokens,
   getCost,
-  getCostSummary
+  getCostSummary,
+  splitMsgToChunks
 } = require("./util.js");
 
 client.on('ready', async () => {
@@ -57,9 +58,11 @@ client.on('messageCreate', async (message) => {
   // Add the bot's response to the conversation history
   history[channelId].push({ role: 'bot', content: response });
 
-  const output = "[MODEL: gpt-3.5-turbo]\n" + response;
-  
-  message.channel.send(output);
+  const outputFull = "[MODEL: gpt-3.5-turbo]\n" + response;
+  const outputChunks = splitMsgToChunks(outputFull);
+  for (const chunk of outputChunks) {
+    await message.channel.send(chunk);
+  }
 });
 
 async function chatGPT(history) {
