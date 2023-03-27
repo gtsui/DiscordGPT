@@ -1,8 +1,19 @@
 const dotenv = require("dotenv");
 dotenv.config();
 
-const { client, openai, history } = require("./config.js");
-const { promptTokens, completionTokens, getCost, getCostSummary } = require("./util.js");
+const {
+  client,
+  openai,
+  history
+} = require("./config.js");
+const {
+  promptTokens,
+  updatePromptTokens,
+  completionTokens,
+  updateCompletionTokens,
+  getCost,
+  getCostSummary
+} = require("./util.js");
 
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -62,8 +73,8 @@ async function chatGPT(history) {
 
     // Update token/cost usage
     let usage = response.data.usage;
-    promptTokens += usage.prompt_tokens;
-    completionTokens += usage.completionTokens;
+    updatePromptTokens(usage.prompt_tokens);
+    updateCompletionTokens(usage.completion_tokens);
     console.log(getCostSummary());
     
     return response.data.choices[0].message.content.trim();
