@@ -41,9 +41,11 @@ client.on('messageCreate', async (message) => {
   if(message.content === "?HISTORY.CLEAR") {
     history[channelId] = {};
     message.channel.send("Conversation history cleared.");
+    return;
   } else if(message.content === "?COST") {
     let costSummary = getCostSummary();
     message.channel.send(costSummary);
+    return;
   }
   
   // Add user message to the conversation history
